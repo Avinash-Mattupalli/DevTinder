@@ -1,0 +1,23 @@
+{
+  "name": "dev-tinder",
+  "version": "1.0.0",
+  "description": "networking application for developers",
+  "main": "index.js",
+  "scripts": {
+    "dev":"nodemon src/app.js",
+    "start":"node src/app.js"
+  },
+  "keywords": [
+    "react",
+    "js",
+    "node",
+    "express",
+    "mongo",
+    "db"
+  ],
+  "author": "avinash_mattupalli",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
