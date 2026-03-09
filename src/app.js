@@ -1,4 +1,5 @@
 const express = require("express");
+const { admin_auth } = require("./middlewares/adminAuth");
 const app = express();
 
 app.listen(7777, () => {
@@ -60,3 +61,7 @@ app.use("/user", [
     res.send("Handler 2 executed");
   },
 ]);
+
+// auth example
+
+app.get("/admin/getall", admin_auth);
