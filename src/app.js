@@ -65,3 +65,18 @@ app.use("/user", [
 // auth example
 
 app.get("/admin/getall", admin_auth);
+
+// error handling
+app.use("/", (err, req, res, next) => {
+  if (err) {
+    res.status(500).send("Something went wrong");
+  }
+});
+// error handling using try catch
+app.get("/userdata", (req, res, next) => {
+  try {
+    throw new Error("Error Test");
+  } catch (err) {
+    res.status(500).send("error occured");
+  }
+});
