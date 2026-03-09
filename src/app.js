@@ -34,3 +34,29 @@ app.use("/profile", (req, res) => {
 app.use("/", (req, res) => {
   res.send("DevTinder Home Page");
 });
+
+//Example of next to call the next available handler
+app.use(
+  "/user",
+  (req, res, next) => {
+    console.log("Handler 1");
+    res.send("Handler 1 executed");
+    next();
+  },
+  (req, res) => {
+    console.log("Handler 2");
+    res.send("Handler 2 executed");
+  },
+);
+// even handlers are wrapped in an array it behaves same as above. all or some handlers can be wrapped in an array. can be used in any CURD methods
+app.use("/user", [
+  (req, res, next) => {
+    console.log("Handler 1");
+    res.send("Handler 1 executed");
+    next();
+  },
+  (req, res) => {
+    console.log("Handler 2");
+    res.send("Handler 2 executed");
+  },
+]);
