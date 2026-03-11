@@ -1,12 +1,19 @@
 const express = require("express");
 const { admin_auth } = require("./middlewares/adminAuth");
 const User = require("./models/user");
-const User = require("./models/user");
+const connectDB = require("./config/database");
 const app = express();
 
-app.listen(7777, () => {
-  console.log("Server Running Successfully On Port 7777");
-});
+connectDB()
+  .then(() => {
+    console.log("Database connection successful!");
+    app.listen(7777, () => {
+      console.log("Server Running Successfully On Port 7777");
+    });
+  })
+  .catch(() => {
+    console.error("Failed to connect to database");
+  });
 
 app.post("/signup", async (req, res, next) => {
   const userObj = {
