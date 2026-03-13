@@ -68,6 +68,37 @@ app.post("/signup", async (req, res, next) => {
   }
 });
 
+// delete user
+
+app.delete("/user", async (req, res) => {
+  const userId = req.body.userId;
+  try {
+    // const deleteUser = User.findByIdAndDelete({_id:userId});
+    // below is shorthand of above both works the same
+    const deleteUser = await User.findByIdAndDelete(userId);
+    res.send("User Deleted Successfully");
+  } catch {
+    res.status(400).send("Failed to delete the user");
+  }
+});
+
+// update user
+
+app.patch("/user", async (req, res) => {
+  const userId = req.body.userId;
+  const data = req.body;
+
+  try {
+    // here the third parameter in findByIdAndUpdate is options which will have specific use cases here retrunDocument:"before"(default value) will return object before update
+    const oldUserRecord = await User.findByIdAndUpdate(userId, data, {
+      returnDocument: "before",
+    });
+    res.send("User Updated Successfully");
+  } catch {
+    res.status(400).send("Failed to update the user");
+  }
+});
+
 // app.get("/user/:userId/:name/:pwd", (req, res) => {
 //   console.log(req.query);
 //   res.send({ firstname: "Avinash", lastname: "Mattupalli" });
