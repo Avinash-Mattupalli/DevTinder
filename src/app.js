@@ -17,6 +17,46 @@ connectDB()
     console.error("Failed to connect to database");
   });
 
+// get user
+
+app.get("/user", async (req, res) => {
+  const email = req.body.email;
+
+  try {
+    const users = await User.find({ email });
+
+    // findOne() will return the old or first entry if we have multiple entries for the given filters
+    // const oneUser = await User.findOne({ email });
+
+    if (users.length === 0) {
+      res.status(404).send("User Not Found");
+    } else {
+      res.send(users);
+    }
+  } catch {
+    res.status(400).send("something went wrong");
+  }
+});
+
+// get all users
+
+app.get("/feed", async (req, res) => {
+  try {
+    //here if we send empty object (filter) in find method it will return all the available records.
+    const allUsers = await User.find({});
+
+    if (allUsers.length === 0) {
+      res.status(400).send("No users found. Create new users");
+    } else {
+      res.send(allUsers);
+    }
+  } catch {
+    res.status(400).send("Something went wrong while fetching all users");
+  }
+});
+
+// add a user
+
 app.post("/signup", async (req, res, next) => {
   const user = new User(req.body);
 
