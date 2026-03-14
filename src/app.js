@@ -84,11 +84,22 @@ app.delete("/user", async (req, res) => {
 
 // update user
 
-app.patch("/user", async (req, res) => {
-  const userId = req.body.userId;
+app.patch("/user/:userId", async (req, res) => {
+  const userId = req.params?.userId;
   const data = req.body;
 
   try {
+    const ALLOWED_UPDATES = ["profileUrl", "age", "skills", "about", "gender"];
+    const isUpdateAllowed = Objec.keys(data).every((k) =>
+      ALLOWED_UPDATES.includes(k),
+    );
+    if (data?.skills.length > 10) {
+      throw new Error("Max 10 skills are allowed");
+    }
+
+    if (!isUpdateAllowed) {
+      throw new Error("Update Not Allowed");
+    }
     // here the third parameter in findByIdAndUpdate is options which will have specific use cases here retrunDocument:"before"(default value) will return object before update
     const oldUserRecord = await User.findByIdAndUpdate(userId, data, {
       returnDocument: "before",

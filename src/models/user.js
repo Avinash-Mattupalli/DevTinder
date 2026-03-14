@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const validator = require("validator");
 
 const userSchema = new mongoose.Schema(
   {
@@ -10,6 +11,21 @@ const userSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
       trim: true,
+      validate(value) {
+        if (!validator.isEmail(value)) {
+          throw new Error("Invalid Email Format");
+        }
+      },
+    },
+    passowrd: {
+      type: String,
+      validate(value) {
+        if (!validator.isStrongPassword(value)) {
+          throw new Error(
+            "Please enter a strong password:{ minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1}",
+          );
+        }
+      },
     },
     age: { type: Number, min: 18, max: 100 },
     gender: {
@@ -20,7 +36,14 @@ const userSchema = new mongoose.Schema(
         }
       },
     },
-    photoUrl: { type: String },
+    photoUrl: {
+      type: String,
+      validate(value) {
+        if (!validator.isURL(value)) {
+          throw new Error("Invalid image url format:" + value);
+        }
+      },
+    },
     about: {
       type: String,
       default: "Hello Everyone",
