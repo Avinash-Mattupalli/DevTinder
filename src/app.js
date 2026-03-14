@@ -92,10 +92,11 @@ app.patch("/user", async (req, res) => {
     // here the third parameter in findByIdAndUpdate is options which will have specific use cases here retrunDocument:"before"(default value) will return object before update
     const oldUserRecord = await User.findByIdAndUpdate(userId, data, {
       returnDocument: "before",
+      runValidators: true,
     });
     res.send("User Updated Successfully");
   } catch {
-    res.status(400).send("Failed to update the user");
+    res.status(400).send("Failed to update the user" + err.message);
   }
 });
 
