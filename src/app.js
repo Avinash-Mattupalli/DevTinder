@@ -2,6 +2,9 @@ const express = require("express");
 const { admin_auth } = require("./middlewares/adminAuth");
 const User = require("./models/user");
 const connectDB = require("./config/database");
+const { validateSignUpData } = require("./utils/validation");
+const bcrypt = require("bcrypt");
+const validator = require("validator");
 const app = express();
 
 app.use(express.json());
@@ -58,13 +61,52 @@ app.get("/feed", async (req, res) => {
 // add a user
 
 app.post("/signup", async (req, res, next) => {
-  const user = new User(req.body);
-
   try {
+    //Validation of the data
+    validateSignUpData(req);
+    const { firstName, lastName, email, password } = req.body;
+    //Encrypt passowrd
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = new User({
+      firstName,
+      lastName,
+      email,
+      password: hashedPassword,
+    });
+
     await user.save();
     res.send("User Added Successfully");
   } catch (err) {
     res.status(400).send("Error saving data: " + err.message);
+  }
+});
+
+// login
+
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!validator.isEmail(email)) {
+      throw new Error("Invalid Email Format");
+    }
+    const user = await User.findOne({ email });
+    if (!user) {
+      throw new Error("Invalid user credentials");
+    }
+    const isValidPassword = await bcrypt.compare(password, user.password);
+
+    if (isValidPassword) {
+
+
+
+      
+      res.send("Login Successfull");
+    } else {
+      throw new Error("Invalid user credentials");
+    }
+  } catch (error) {
+    res.status(400).send("Error:" + error);
   }
 });
 
