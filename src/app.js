@@ -1,13 +1,17 @@
 const express = require("express");
-const { admin_auth } = require("./middlewares/adminAuth");
+const { admin_auth } = require("./middlewares/auth");
 const User = require("./models/user");
 const connectDB = require("./config/database");
 const { validateSignUpData } = require("./utils/validation");
 const bcrypt = require("bcrypt");
 const validator = require("validator");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
+const { userAuth } = require("./middlewares/auth");
 const app = express();
 
 app.use(express.json());
+app.use(cookieParser());
 
 connectDB()
   .then(() => {
@@ -97,16 +101,38 @@ app.post("/login", async (req, res) => {
     const isValidPassword = await bcrypt.compare(password, user.password);
 
     if (isValidPassword) {
-
-
-
-      
+      const token = await jwt.sign({ _id: user?._id }, "dev@tinder@token", {
+        expiresIn: "1d",
+      });
+      res.cookie("token", token);
       res.send("Login Successfull");
     } else {
       throw new Error("Invalid user credentials");
     }
   } catch (error) {
-    res.status(400).send("Error:" + error);
+    res.status(400).send("Error:" + error.message);
+  }
+});
+
+// Profile
+
+app.get("/profile", userAuth, async (req, res) => {
+  try {
+    // const cookies = req.cookies;
+    // const { token } = cookies;
+    // if (!token) {
+    //   throw new Error("Invalid token");
+    // }
+    // const decodedMessage = await jwt.verify(token, "dev@tinder@token");
+    // const { _id } = decodedMessage;
+    // const user = await User.findById(_id);
+    const user = req.user;
+    if (!user) {
+      throw new Error("Invalid request: Login again");
+    }
+    res.send(user);
+  } catch (error) {
+    res.status(400).send("Error: " + error.message);
   }
 });
 
