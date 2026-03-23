@@ -98,13 +98,27 @@ app.post("/login", async (req, res) => {
     if (!user) {
       throw new Error("Invalid user credentials");
     }
-    const isValidPassword = await bcrypt.compare(password, user.password);
+    // const isValidPassword = await bcrypt.compare(password, user.password);
+
+    // validation of password using handler function from schema
+    const isValidPassword = await user.validatePassword(password);
 
     if (isValidPassword) {
-      const token = await jwt.sign({ _id: user?._id }, "dev@tinder@token", {
-        expiresIn: "1d",
+      // const token = await jwt.sign({ _id: user?._id }, "dev@tinder@token", {
+      //   // expiration of jwt token
+      //   expiresIn: "7d",
+      // });
+
+      //using handler function defined in schema
+
+      const token = await user.getJWT();
+
+      res.cookie("token", token, {
+        // cookie expires in 24 hrs- expiration of cookie
+        expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        //Works only in http not in https
+        // httpOnly: true,
       });
-      res.cookie("token", token);
       res.send("Login Successfull");
     } else {
       throw new Error("Invalid user credentials");
