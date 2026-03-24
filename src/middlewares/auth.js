@@ -24,7 +24,7 @@ const userAuth = async (req, res, next) => {
     // get the stored info from the jwt token
     const { _id } = decodedMessage;
     // get the user by id
-    const user = User.findById(_id);
+    const user = await User.findById(_id);
     if (!user) {
       throw new Error("User not found");
     }

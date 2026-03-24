@@ -13,6 +13,10 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
+const authRouter = require("./routes/auth");
+const profileRouter = require("./routes/profile");
+const requestRouter = require("./routes/requests");
+
 connectDB()
   .then(() => {
     console.log("Database connection successful!");
@@ -23,6 +27,10 @@ connectDB()
   .catch(() => {
     console.error("Failed to connect to database");
   });
+
+app.use("/", authRouter);
+app.use("/", profileRouter);
+app.use("/", requestRouter);
 
 // get user
 
