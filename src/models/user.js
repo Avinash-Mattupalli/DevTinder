@@ -62,6 +62,9 @@ const userSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+//Compound Index- to make query run fast
+userSchema.index({ firstName: 1, lastName: 1 });
+
 // need to use the normal functions, arrow function not allowed it will break if we use this.
 userSchema.methods.getJWT = async function () {
   const user = this;
